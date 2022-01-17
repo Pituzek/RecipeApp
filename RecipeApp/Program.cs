@@ -15,25 +15,35 @@ namespace RecipeApp
     {
         static void Main(string[] args)
         {
-            PrintTeaspoonsToMl();
-            PrintTablespoonsToMl();
-
-            //We have bootles of 100ml.
-            //How many bottles can we fill after the conversion?
+            double totalMl = PrintTeaspoonsToMl() + PrintTablespoonsToMl();
+            PrintHowMany100MlBottles(totalMl);
         }
 
-        static void PrintTeaspoonsToMl()
+        static double PrintTeaspoonsToMl()
         {
             double teaspoons = GetAmountFromConsole("teaspoons");
             double mlOfTeaspoons = TeaspoonsToMl(teaspoons);
             Print(teaspoons, "teaspoons", mlOfTeaspoons);
+
+            return mlOfTeaspoons;
         }
 
-        static void PrintTablespoonsToMl()
+        static double PrintTablespoonsToMl()
         {
             double tablespoon = GetAmountFromConsole("tablespoon");
             double mlOfTableSpoons = TableSpoonsToMl(tablespoon);
             Print(tablespoon, "tablespoon", mlOfTableSpoons);
+
+            return mlOfTableSpoons;
+        }
+
+        static void PrintHowMany100MlBottles(double ml)
+        {
+            //We have bootles of 100ml.
+            //How many bottles can we fill after the conversion?
+            //int is a whole number
+            int bottlesCount = (int)(ml / 100) + 1;
+            Console.WriteLine($"{ml:F2} ml can fill {bottlesCount} of 100ml");
         }
 
         static double GetAmountFromConsole(string unit)
