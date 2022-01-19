@@ -21,7 +21,19 @@ namespace RecipeApp.Core
         static double[] multipliers = { 240, 14.79, 4.93 };
         static string[] units = { "cup", "tablespoon", "teaspoon" };
 
-        public static string ConvertToCookingUnits(string recipe)
+        public static string ConvertRecipe(string recipe, bool isSiUnit)
+        {
+            if (isSiUnit)
+            {
+                return ConvertToSiUnits(recipe);
+            }
+            else
+            {
+                return ConvertToCookingUnits(recipe);
+            }
+        }
+
+        private static string ConvertToCookingUnits(string recipe)
         {
             string[] words = recipe.Split(' ', '\r', '\n');
             for (int i = 0; i < words.Length; i++)
@@ -39,7 +51,7 @@ namespace RecipeApp.Core
             return String.Join(" ", words);
         }
 
-        public static string ConvertToSiUnits(string recipe)
+        private static string ConvertToSiUnits(string recipe)
         {
             string[] words = recipe.Split(' ', '\r', '\n');
             for (int i = 0; i < words.Length; i++)
