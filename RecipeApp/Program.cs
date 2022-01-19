@@ -28,10 +28,10 @@ namespace RecipeApp
             // 3. Debugging
             // .\ current directory .\Recipe.txt"
             // ..\ previos directory ..\Recipe.txt"
-            string ingredients = ReadAllText("Recipe.txt");
+            string ingredients = ReadAllText(@".\Recipe.txt");
 
             var standardised = StandariseRecipe(ingredients);
-            WriteAllText("Recipe-Converted.txt", standardised);
+            WriteAllText(@".\Recipe-Converted.txt", standardised);
         }
 
         static string ReadAllText(string path)
