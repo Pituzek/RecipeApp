@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 
 namespace RecipeApp
 {
@@ -22,22 +23,47 @@ namespace RecipeApp
 
         static void Main(string[] args)
         {
-            //1.5 cups all-purpose flour. 3.5 teaspoons baking powder. 1 teaspoon salt, or more to taste. 1 tablespoon white sugar. 1.25 cups milk. 1 egg. 3 tablespoons butter, melted
+            // 1. Read ingredients from a file (recipe.txt)
+            // 2. Validate a file
+            // 3. Debugging
+            // .\ current directory .\Recipe.txt"
+            // ..\ previos directory ..\Recipe.txt"
+            string ingredients = ReadAllText("Recipe.txt");
 
-            Console.WriteLine("Please enter the ingredients");
-            string ingredients = "1.5 cups all-purpose flour. 3.5 teaspoons baking powder." +
-                                " 1 teaspoon salt, or more to taste. 1 tablespoon white sugar." +
-                                " 1.25 cups milk. 1 egg. 3 tablespoons butter, melted";
             var standardised = StandariseRecipe(ingredients);
-            Console.WriteLine(standardised);
+            WriteAllText("Recipe-Converted.txt", standardised);
+        }
+
+        static string ReadAllText(string path)
+        {
+            using (var stream = new StreamReader(path))
+            {
+                var contents = stream.ReadToEnd();
+                return contents;
+            }
+        }
+
+        static void WriteAllText(string path, string text)
+        {
+            using (var stream = new StreamWriter(path))
+            {
+                stream.Write(text);
+            }
         }
 
         static string StandariseRecipe(string recipe)
         {
-            string[] words = recipe.Split(" ");
+            string[] words = recipe.Split(' ', '\r', '\n');
             for (int i = 0; i < words.Length; i++)
             {
-                StandardiseCookingUnit(i, words);
+                try
+                {
+                    StandardiseCookingUnit(i, words);
+                }
+                catch (InvalidRecipeException ex)
+                {
+                    Console.WriteLine($"Skipping word, because: {ex.Message}");
+                }
             }
 
             // String.Join() - combine parts of string into one string
@@ -47,16 +73,24 @@ namespace RecipeApp
         static void StandardiseCookingUnit(int i, string[] words)
         {
             string cookingUnit = words[i];
-            //then find the equivalent ml multiplier for that amount
             var multipplier = FindMultiplier(cookingUnit);
             if (multipplier == -1) return;
-            //if it is cooking unit, go back 1 word to find the amount
-            var amountText = words[i - 1];
-            //multiply the amount from multiplier
-            var amountMl = double.Parse(amountText, CultureInfo.InvariantCulture) * multipplier;
-            //replace the old amount with the new amount
+
+            var amountText = words[i - 1].Trim();
+
+            var isNumber = double.TryParse(
+                amountText,
+                NumberStyles.AllowDecimalPoint,
+                CultureInfo.InvariantCulture,
+                out double amount);
+
+            if (!isNumber)
+            {
+                throw new InvalidRecipeException($"{amountText} is not a number");
+            }
+
+            var amountMl = amount * multipplier;
             words[i] = "ml";
-            //replace the old unit with the new unit
             words[i - 1] = amountMl.ToString();
         }
 
